@@ -1,5 +1,4 @@
 import {
-  type DebuggerEvent,
   EffectFlags,
   type Subscriber,
   activeSub,
@@ -52,35 +51,17 @@ export class ComputedRefImpl<T = any> implements Subscriber {
    * @internal
    */
   globalVersion: number = globalVersion - 1
-  /**
-   * @internal
-   */
-  isSSR: boolean
+  
   /**
    * @internal
    */
   next?: Subscriber = undefined
 
-  // for backwards compat
-  effect: this = this
-  // dev only
-  onTrack?: (event: DebuggerEvent) => void
-  // dev only
-  onTrigger?: (event: DebuggerEvent) => void
-
-  /**
-   * Dev only
-   * @internal
-   */
-  _warnRecursive?: boolean
-
   constructor(
     public fn: ComputedGetter<T>,
-    private readonly setter: ComputedSetter<T> | undefined,
-    isSSR: boolean,
+    private readonly setter: ComputedSetter<T> | undefined
   ) {
     this[ReactiveFlags.IS_READONLY] = !setter
-    this.isSSR = isSSR
   }
 
   /**

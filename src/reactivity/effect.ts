@@ -109,8 +109,6 @@ export class ReactiveEffect<T = any>
 
   scheduler?: EffectScheduler = undefined
   onStop?: () => void
-  onTrack?: (event: DebuggerEvent) => void
-  onTrigger?: (event: DebuggerEvent) => void
 
   constructor(public fn: () => T) {
     if (activeEffectScope && activeEffectScope.active) {
@@ -202,10 +200,6 @@ export class ReactiveEffect<T = any>
     if (isDirty(this)) {
       this.run()
     }
-  }
-
-  get dirty(): boolean {
-    return isDirty(this)
   }
 }
 
@@ -371,19 +365,6 @@ export function refreshComputed(computed: ComputedRefImpl): undefined {
   }
   computed.globalVersion = globalVersion
 
-  // In SSR there will be no render effect, so the computed has no subscriber
-  // and therefore tracks no deps, thus we cannot rely on the dirty check.
-  // Instead, computed always re-evaluate and relies on the globalVersion
-  // fast path above for caching.
-  // #12337 if computed has no deps (does not rely on any reactive data) and evaluated,
-  // there is no need to re-evaluate.
-  if (
-    !computed.isSSR &&
-    computed.flags & EffectFlags.EVALUATED &&
-    ((!computed.deps && !(computed as any)._dirty) || !isDirty(computed))
-  ) {
-    return
-  }
   computed.flags |= EffectFlags.RUNNING
 
   const dep = computed.dep
