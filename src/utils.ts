@@ -7,8 +7,6 @@ export const checkAttr = (el: Element, name: string): string | null => {
   return val
 }
 
-export type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N
-
 export const listen = (
   el: Element,
   event: string,
@@ -36,12 +34,6 @@ export const isObject = (val: unknown): val is Record<any, any> =>
 
 export const isSymbol = (val: unknown): val is symbol =>
     typeof val === 'symbol';
-
-export const isPlainObject = (val: unknown): val is object =>
-  toTypeString(val) === '[object Object]'
-
-export const isSet = (val: unknown): val is Set<any> =>
-  toTypeString(val) === '[object Set]'
 
 const hyphenateRE = /\B([A-Z])/g;
 export const hyphenate: (str: string) => string = cacheStringFunction(
@@ -225,17 +217,3 @@ export const isIntegerKey = (key: unknown): boolean =>
   key !== 'NaN' &&
   key[0] !== '-' &&
   '' + parseInt(key, 10) === key
-
-export const def = (
-  obj: object,
-  key: string | symbol,
-  value: any,
-  writable = false,
-): void => {
-  Object.defineProperty(obj, key, {
-    configurable: true,
-    enumerable: false,
-    writable,
-    value,
-  })
-}
