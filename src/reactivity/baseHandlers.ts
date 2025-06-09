@@ -11,7 +11,7 @@ import {
   toRaw,
 } from './reactive'
 import { arrayInstrumentations } from './arrayInstrumentations'
-import { ReactiveFlags, TrackOpTypes, TriggerOpTypes } from './constants'
+import { ReactiveFlags, TriggerOpTypes } from './constants'
 import { ITERATE_KEY, track, trigger } from './dep'
 import {
   hasChanged,
@@ -41,7 +41,7 @@ function hasOwnProperty(this: object, key: unknown) {
   // #10455 hasOwnProperty may be called with non-string values
   if (!isSymbol(key)) key = String(key)
   const obj = toRaw(this)
-  track(obj, TrackOpTypes.HAS, key)
+  track(obj, key)
   return obj.hasOwnProperty(key as string)
 }
 
@@ -109,7 +109,7 @@ class BaseReactiveHandler implements ProxyHandler<Target> {
     }
 
     if (!isReadonly) {
-      track(target, TrackOpTypes.GET, key)
+      track(target, key)
     }
 
     if (isShallow) {
@@ -177,7 +177,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
       if (!hadKey) {
         trigger(target, TriggerOpTypes.ADD, key, value)
       } else if (hasChanged(value, oldValue)) {
-        trigger(target, TriggerOpTypes.SET, key, value, oldValue)
+        trigger(target, TriggerOpTypes.SET, key, value)
       }
     }
     return result
@@ -188,10 +188,9 @@ class MutableReactiveHandler extends BaseReactiveHandler {
     key: string | symbol,
   ): boolean {
     const hadKey = hasOwn(target, key)
-    const oldValue = target[key]
     const result = Reflect.deleteProperty(target, key)
     if (result && hadKey) {
-      trigger(target, TriggerOpTypes.DELETE, key, undefined, oldValue)
+      trigger(target, TriggerOpTypes.DELETE, key, undefined)
     }
     return result
   }
@@ -199,7 +198,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
   has(target: Record<string | symbol, unknown>, key: string | symbol): boolean {
     const result = Reflect.has(target, key)
     if (!isSymbol(key) || !builtInSymbols.has(key)) {
-      track(target, TrackOpTypes.HAS, key)
+      track(target, key)
     }
     return result
   }
@@ -207,7 +206,6 @@ class MutableReactiveHandler extends BaseReactiveHandler {
   ownKeys(target: Record<string | symbol, unknown>): (string | symbol)[] {
     track(
       target,
-      TrackOpTypes.ITERATE,
       isArray(target) ? 'length' : ITERATE_KEY,
     )
     return Reflect.ownKeys(target)

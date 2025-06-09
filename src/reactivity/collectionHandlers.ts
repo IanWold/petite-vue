@@ -7,7 +7,7 @@ import {
   toReadonly,
 } from './reactive'
 import { ITERATE_KEY, MAP_KEY_ITERATE_KEY, track, trigger } from './dep'
-import { ReactiveFlags, TrackOpTypes, TriggerOpTypes } from './constants'
+import { ReactiveFlags, TriggerOpTypes } from './constants'
 import {
   extend,
   hasChanged,
@@ -47,7 +47,6 @@ function createIterableMethod(
     !isReadonly &&
       track(
         rawTarget,
-        TrackOpTypes.ITERATE,
         isKeyOnly ? MAP_KEY_ITERATE_KEY : ITERATE_KEY,
       )
     // return a wrapped iterator which returns observed versions of the
@@ -96,9 +95,9 @@ function createInstrumentations(
       const rawKey = toRaw(key)
       if (!readonly) {
         if (hasChanged(key, rawKey)) {
-          track(rawTarget, TrackOpTypes.GET, key)
+          track(rawTarget, key)
         }
-        track(rawTarget, TrackOpTypes.GET, rawKey)
+        track(rawTarget, rawKey)
       }
       const { has } = getProto(rawTarget)
       const wrap = shallow ? toShallow : readonly ? toReadonly : toReactive
@@ -114,7 +113,7 @@ function createInstrumentations(
     },
     get size() {
       const target = (this as unknown as IterableCollections)[ReactiveFlags.RAW]
-      !readonly && track(toRaw(target), TrackOpTypes.ITERATE, ITERATE_KEY)
+      !readonly && track(toRaw(target), ITERATE_KEY)
       return Reflect.get(target, 'size', target)
     },
     has(this: CollectionTypes, key: unknown): boolean {
@@ -123,9 +122,9 @@ function createInstrumentations(
       const rawKey = toRaw(key)
       if (!readonly) {
         if (hasChanged(key, rawKey)) {
-          track(rawTarget, TrackOpTypes.HAS, key)
+          track(rawTarget, key)
         }
-        track(rawTarget, TrackOpTypes.HAS, rawKey)
+        track(rawTarget, rawKey)
       }
       return key === rawKey
         ? target.has(key)
@@ -136,7 +135,7 @@ function createInstrumentations(
       const target = observed[ReactiveFlags.RAW]
       const rawTarget = toRaw(target)
       const wrap = shallow ? toShallow : readonly ? toReadonly : toReactive
-      !readonly && track(rawTarget, TrackOpTypes.ITERATE, ITERATE_KEY)
+      !readonly && track(rawTarget, ITERATE_KEY)
       return target.forEach((value: unknown, key: unknown) => {
         // important: make sure the callback is
         // 1. invoked with the reactive map as `this` and 3rd arg
@@ -187,31 +186,29 @@ function createInstrumentations(
             if (!hadKey) {
               trigger(target, TriggerOpTypes.ADD, key, value)
             } else if (hasChanged(value, oldValue)) {
-              trigger(target, TriggerOpTypes.SET, key, value, oldValue)
+              trigger(target, TriggerOpTypes.SET, key, value)
             }
             return this
           },
           delete(this: CollectionTypes, key: unknown) {
             const target = toRaw(this)
-            const { has, get } = getProto(target)
+            const { has } = getProto(target)
             let hadKey = has.call(target, key)
             if (!hadKey) {
               key = toRaw(key)
               hadKey = has.call(target, key)
             }
 
-            const oldValue = get ? get.call(target, key) : undefined
             // forward the operation before queueing reactions
             const result = target.delete(key)
             if (hadKey) {
-              trigger(target, TriggerOpTypes.DELETE, key, undefined, oldValue)
+              trigger(target, TriggerOpTypes.DELETE, key, undefined)
             }
             return result
           },
           clear(this: IterableCollections) {
             const target = toRaw(this)
             const hadItems = target.size !== 0
-            const oldTarget = undefined
             // forward the operation before queueing reactions
             const result = target.clear()
             if (hadItems) {
@@ -220,7 +217,6 @@ function createInstrumentations(
                 TriggerOpTypes.CLEAR,
                 undefined,
                 undefined,
-                oldTarget,
               )
             }
             return result

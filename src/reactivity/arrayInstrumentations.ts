@@ -1,4 +1,3 @@
-import { TrackOpTypes } from './constants'
 import { endBatch, pauseTracking, resetTracking, startBatch } from './effect'
 import { isProxy, isShallow, toRaw, toReactive } from './reactive'
 import { ARRAY_ITERATE_KEY, track } from './dep'
@@ -12,7 +11,7 @@ import { isArray } from '../utils'
 export function reactiveReadArray<T>(array: T[]): T[] {
   const raw = toRaw(array)
   if (raw === array) return raw
-  track(raw, TrackOpTypes.ITERATE, ARRAY_ITERATE_KEY)
+  track(raw, ARRAY_ITERATE_KEY)
   return isShallow(array) ? raw : raw.map(toReactive)
 }
 
@@ -20,7 +19,7 @@ export function reactiveReadArray<T>(array: T[]): T[] {
  * Track array iteration and return raw array
  */
 export function shallowReadArray<T>(arr: T[]): T[] {
-  track((arr = toRaw(arr)), TrackOpTypes.ITERATE, ARRAY_ITERATE_KEY)
+  track((arr = toRaw(arr)), ARRAY_ITERATE_KEY)
   return arr
 }
 
@@ -297,7 +296,7 @@ function searchProxy(
   args: unknown[],
 ) {
   const arr = toRaw(self) as any
-  track(arr, TrackOpTypes.ITERATE, ARRAY_ITERATE_KEY)
+  track(arr, ARRAY_ITERATE_KEY)
   // we run the method using the original args first (which may be reactive)
   const res = arr[method](...args)
 

@@ -1,6 +1,6 @@
 import { isArray, isIntegerKey, isMap, isSymbol } from '../utils'
 import type { ComputedRefImpl } from './computed'
-import { type TrackOpTypes, TriggerOpTypes } from './constants'
+import { TriggerOpTypes } from './constants'
 import {
   type DebuggerEventExtraInfo,
   EffectFlags,
@@ -150,13 +150,13 @@ export class Dep {
     return link
   }
 
-  trigger(debugInfo?: DebuggerEventExtraInfo): void {
+  trigger(): void {
     this.version++
     globalVersion++
-    this.notify(debugInfo)
+    this.notify()
   }
 
-  notify(debugInfo?: DebuggerEventExtraInfo): void {
+  notify(): void {
     startBatch()
     try {
       for (let link = this.subs; link; link = link.prevSub) {
@@ -215,10 +215,9 @@ export const ARRAY_ITERATE_KEY: unique symbol = Symbol('')
  * which records all effects that depend on the reactive property.
  *
  * @param target - Object holding the reactive property.
- * @param type - Defines the type of access to the reactive property.
  * @param key - Identifier of the reactive property to track.
  */
-export function track(target: object, type: TrackOpTypes, key: unknown): void {
+export function track(target: object, key: unknown): void {
   if (shouldTrack && activeSub) {
     let depsMap = targetMap.get(target)
     if (!depsMap) {
@@ -247,9 +246,7 @@ export function trigger(
   target: object,
   type: TriggerOpTypes,
   key?: unknown,
-  newValue?: unknown,
-  oldValue?: unknown,
-  oldTarget?: Map<unknown, unknown> | Set<unknown>,
+  newValue?: unknown
 ): void {
   const depsMap = targetMap.get(target)
   if (!depsMap) {
