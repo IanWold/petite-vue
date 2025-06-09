@@ -233,12 +233,3 @@ export const mutableHandlers: ProxyHandler<object> =
 
 export const readonlyHandlers: ProxyHandler<object> =
   /*@__PURE__*/ new ReadonlyReactiveHandler()
-
-export const shallowReactiveHandlers: MutableReactiveHandler =
-  /*@__PURE__*/ new MutableReactiveHandler(true)
-
-// Props handlers are special in the sense that it should not unwrap top-level
-// refs (in order to allow refs to be explicitly passed down), but should
-// retain the reactivity of the normal readonly object.
-export const shallowReadonlyHandlers: ReadonlyReactiveHandler =
-  /*@__PURE__*/ new ReadonlyReactiveHandler(true)

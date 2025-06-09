@@ -511,37 +511,11 @@ export function pauseTracking(): void {
 }
 
 /**
- * Re-enables effect tracking (if it was paused).
- */
-export function enableTracking(): void {
-  trackStack.push(shouldTrack)
-  shouldTrack = true
-}
-
-/**
  * Resets the previous global effect tracking state.
  */
 export function resetTracking(): void {
   const last = trackStack.pop()
   shouldTrack = last === undefined ? true : last
-}
-
-/**
- * Registers a cleanup function for the current active effect.
- * The cleanup function is called right before the next effect run, or when the
- * effect is stopped.
- *
- * Throws a warning if there is no current active effect. The warning can be
- * suppressed by passing `true` to the second argument.
- *
- * @param fn - the cleanup function to be registered
- * @param failSilently - if `true`, will not throw warning when called without
- * an active effect.
- */
-export function onEffectCleanup(fn: () => void, failSilently = false): void {
-  if (activeSub instanceof ReactiveEffect) {
-    activeSub.cleanup = fn
-  }
 }
 
 function cleanupEffect(e: ReactiveEffect) {

@@ -328,11 +328,3 @@ export function trigger(
 
   endBatch()
 }
-
-export function getDepFromReactive(
-  object: any,
-  key: string | number | symbol,
-): Dep | undefined {
-  const depMap = targetMap.get(object)
-  return depMap && depMap.get(key)
-}

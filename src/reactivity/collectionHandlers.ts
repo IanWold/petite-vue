@@ -272,15 +272,6 @@ export const mutableCollectionHandlers: ProxyHandler<CollectionTypes> = {
   get: /*@__PURE__*/ createInstrumentationGetter(false, false),
 }
 
-export const shallowCollectionHandlers: ProxyHandler<CollectionTypes> = {
-  get: /*@__PURE__*/ createInstrumentationGetter(false, true),
-}
-
 export const readonlyCollectionHandlers: ProxyHandler<CollectionTypes> = {
   get: /*@__PURE__*/ createInstrumentationGetter(true, false),
 }
-
-export const shallowReadonlyCollectionHandlers: ProxyHandler<CollectionTypes> =
-  {
-    get: /*@__PURE__*/ createInstrumentationGetter(true, true),
-  }
