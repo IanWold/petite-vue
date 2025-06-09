@@ -1,12 +1,12 @@
 import { Directive } from '.'
 import {
-  normalizeClass,
-  normalizeStyle,
+  camelize,
+  hyphenate,
   isString,
   isArray,
-  hyphenate,
-  camelize
-} from '@vue/shared'
+  normalizeClass,
+  normalizeStyle
+} from '../utils'
 
 const forceAttrRE = /^(spellcheck|draggable|form|list|type)$/
 

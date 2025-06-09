@@ -7,6 +7,7 @@ import { Block } from './block'
 import { Directive } from './directives'
 import { queueJob } from './scheduler'
 import { inOnce } from './walk'
+
 export interface Context {
   key?: any
   scope: Record<string, any>

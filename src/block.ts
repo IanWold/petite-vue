@@ -1,6 +1,6 @@
 import { Context, createContext } from './context'
 import { walk } from './walk'
-import { remove } from '@vue/shared'
+import { remove } from './utils'
 import { stop } from '@vue/reactivity'
 
 export class Block {

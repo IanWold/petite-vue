@@ -1,4 +1,4 @@
-import { isArray, looseEqual, looseIndexOf, toNumber } from '@vue/shared'
+import { isArray, looseEqual, looseIndexOf, toNumber } from '../utils'
 import { Directive } from '.'
 import { listen } from '../utils'
 

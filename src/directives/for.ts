@@ -1,4 +1,4 @@
-import { isArray, isObject } from '@vue/shared'
+import { isArray, isObject } from '../utils'
 import { Block } from '../block'
 import { evaluate } from '../eval'
 import { Context, createScopedContext } from '../context'

@@ -1,5 +1,5 @@
 import { Directive } from '.'
-import { hyphenate } from '@vue/shared'
+import { hyphenate } from '../utils'
 import { listen } from '../utils'
 import { nextTick } from '../scheduler'
 
