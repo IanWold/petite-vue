@@ -15,10 +15,10 @@
       "require": "./dist/petite-vue.umd.js"
     }
   },
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
+    "build": "vite build && tsc --emitDeclarationOnly",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "release": "node scripts/release.js"
   },
@@ -36,7 +36,6 @@
   },
   "homepage": "https://github.com/vuejs/petite-vue#readme",
   "devDependencies": {
-    "@vue/reactivity": "^3.5.16",
     "chalk": "^5.4.1",
     "conventional-changelog-cli": "^5.0.0",
     "enquirer": "^2.4.1",

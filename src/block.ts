@@ -1,7 +1,7 @@
 import { Context, createContext } from './context'
 import { walk } from './walk'
 import { remove } from './utils'
-import { stop } from '@vue/reactivity'
+import { stop } from './reactivity'
 
 export class Block {
   template: Element | DocumentFragment

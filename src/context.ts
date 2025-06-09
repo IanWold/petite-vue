@@ -2,7 +2,7 @@ import {
   effect as rawEffect,
   reactive,
   ReactiveEffectRunner
-} from '@vue/reactivity'
+} from './reactivity'
 import { Block } from './block'
 import { Directive } from './directives'
 import { queueJob } from './scheduler'

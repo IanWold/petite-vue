@@ -1,8 +1,13 @@
+export const EMPTY_OBJ: { readonly [key: string]: any } = {}
+export const NOOP = (): void => {}
+
 export const checkAttr = (el: Element, name: string): string | null => {
   const val = el.getAttribute(name)
   if (val != null) el.removeAttribute(name)
   return val
 }
+
+export type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N
 
 export const listen = (
   el: Element,
@@ -31,6 +36,12 @@ export const isObject = (val: unknown): val is Record<any, any> =>
 
 export const isSymbol = (val: unknown): val is symbol =>
     typeof val === 'symbol';
+
+export const isPlainObject = (val: unknown): val is object =>
+  toTypeString(val) === '[object Object]'
+
+export const isSet = (val: unknown): val is Set<any> =>
+  toTypeString(val) === '[object Set]'
 
 const hyphenateRE = /\B([A-Z])/g;
 export const hyphenate: (str: string) => string = cacheStringFunction(
@@ -105,6 +116,8 @@ export function normalizeClass(value: unknown): string {
     return res.trim()
 }
 
+export const extend: typeof Object.assign = Object.assign
+
 export const objectToString: typeof Object.prototype.toString =
   Object.prototype.toString
 
@@ -113,6 +126,9 @@ export const toTypeString = (value: unknown): string =>
 
 export const isDate = (val: unknown): val is Date =>
   toTypeString(val) === '[object Date]'
+
+export const isMap = (val: unknown): val is Map<any, any> =>
+  toTypeString(val) === '[object Map]'
 
 function looseCompareArrays(a: any[], b: any[]) {
   if (a.length !== b.length) return false
@@ -180,4 +196,46 @@ export const remove = <T>(arr: T[], el: T): void => {
   if (i > -1) {
     arr.splice(i, 1)
   }
+}
+
+export const toRawType = (value: unknown): string => {
+  return toTypeString(value).slice(8, -1)
+}
+
+const hasOwnProperty = Object.prototype.hasOwnProperty
+export const hasOwn = (
+  val: object,
+  key: string | symbol,
+): key is keyof typeof val => hasOwnProperty.call(val, key)
+
+export function makeMap(str: string): (key: string) => boolean {
+  const map = Object.create(null)
+  for (const key of str.split(',')) map[key] = 1
+  return val => val in map
+}
+
+export const hasChanged = (value: any, oldValue: any): boolean =>
+  !Object.is(value, oldValue)
+
+export const isFunction = (val: unknown): val is Function =>
+  typeof val === 'function'
+
+export const isIntegerKey = (key: unknown): boolean =>
+  isString(key) &&
+  key !== 'NaN' &&
+  key[0] !== '-' &&
+  '' + parseInt(key, 10) === key
+
+export const def = (
+  obj: object,
+  key: string | symbol,
+  value: any,
+  writable = false,
+): void => {
+  Object.defineProperty(obj, key, {
+    configurable: true,
+    enumerable: false,
+    writable,
+    value,
+  })
 }
